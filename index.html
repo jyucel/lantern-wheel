@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Lantern Wheel: a festival sorting puzzle</title>
+  <meta name="description" content="Spin the festival wheel, stack the towers, queue the piers and sort every lantern by color. 200 tricky puzzles plus a daily challenge. Free, no ads, no sign-up.">
+  <meta name="theme-color" content="#160f2b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preload" href="assets/fonts/fredoka-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="sky" aria-hidden="true"></canvas>
+
+  <main id="app">
+    <!-- Title -->
+    <section id="screen-title" class="screen active" aria-label="Title">
+      <div class="title-wrap">
+        <svg class="emblem" viewBox="0 0 200 200" aria-hidden="true">
+          <defs>
+            <radialGradient id="hubg" cx="40%" cy="38%" r="65%"><stop offset="0" stop-color="#fff1c8"/><stop offset="1" stop-color="#b9822f"/></radialGradient>
+            <radialGradient id="glowr" r="50%"><stop offset="0" stop-color="#ff6a5c" stop-opacity=".7"/><stop offset="1" stop-color="#ff6a5c" stop-opacity="0"/></radialGradient>
+            <radialGradient id="glowy" r="50%"><stop offset="0" stop-color="#ffc23d" stop-opacity=".7"/><stop offset="1" stop-color="#ffc23d" stop-opacity="0"/></radialGradient>
+            <radialGradient id="glowb" r="50%"><stop offset="0" stop-color="#43b8ff" stop-opacity=".7"/><stop offset="1" stop-color="#43b8ff" stop-opacity="0"/></radialGradient>
+          </defs>
+          <g class="wheel-spin">
+            <circle cx="100" cy="100" r="62" fill="none" stroke="#f4c46a" stroke-opacity=".6" stroke-width="5"/>
+            <g stroke="#f4c46a" stroke-opacity=".35" stroke-width="2.5">
+              <line x1="100" y1="100" x2="100" y2="38"/><line x1="100" y1="100" x2="162" y2="100"/><line x1="100" y1="100" x2="100" y2="162"/><line x1="100" y1="100" x2="38" y2="100"/>
+              <line x1="100" y1="100" x2="144" y2="56"/><line x1="100" y1="100" x2="144" y2="144"/><line x1="100" y1="100" x2="56" y2="144"/><line x1="100" y1="100" x2="56" y2="56"/>
+            </g>
+            <circle cx="100" cy="38" r="22" fill="url(#glowr)"/><ellipse cx="100" cy="38" rx="8" ry="10" fill="#ff6a5c"/>
+            <circle cx="162" cy="100" r="22" fill="url(#glowy)"/><ellipse cx="162" cy="100" rx="8" ry="10" fill="#ffc23d"/>
+            <circle cx="56" cy="144" r="22" fill="url(#glowb)"/><ellipse cx="56" cy="144" rx="8" ry="10" fill="#43b8ff"/>
+          </g>
+          <circle cx="100" cy="100" r="13" fill="url(#hubg)"/>
+        </svg>
+        <h1 class="logo">Lantern <span>Wheel</span></h1>
+        <p class="tagline">Spin the wheel. Stack the towers. Queue the piers.<br>Sort every lantern by color.</p>
+        <div class="title-buttons">
+          <button id="btn-play" class="btn primary big">Play <small id="play-level"></small></button>
+          <button id="btn-daily" class="btn daily"><span class="daily-title">✦ Daily Lantern</span><small id="daily-sub"></small></button>
+          <button id="btn-levels" class="btn">Levels</button>
+          <button id="btn-help" class="btn ghost">How to play</button>
+        </div>
+        <div class="title-stats" id="title-stats"></div>
+      </div>
+      <div class="corner-buttons">
+        <button class="icon-btn" data-toggle="sfx" aria-label="Toggle sound effects"></button>
+        <button class="icon-btn" data-toggle="music" aria-label="Toggle music"></button>
+        <button class="icon-btn" id="btn-settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8.4 4.6-.1-2.2 2-1.6-2-3.4-2.4.9a8 8 0 0 0-1.9-1.1L15.6 3h-4l-.4 2.6a8 8 0 0 0-1.9 1.1L6.9 5.8l-2 3.4 2 1.6a8 8 0 0 0 0 2.2l-2 1.6 2 3.4 2.4-.9c.6.5 1.2.8 1.9 1.1l.4 2.6h4l.4-2.6c.7-.3 1.3-.6 1.9-1.1l2.4.9 2-3.4-2-1.6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Level select -->
+    <section id="screen-levels" class="screen" aria-label="Level select">
+      <header class="bar">
+        <button class="icon-btn" data-nav="title" aria-label="Back">
+          <svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <h2>Levels</h2>
+        <div class="star-total" id="levels-stars"></div>
+      </header>
+      <div class="levels-scroll" id="levels-list"></div>
+    </section>
+
+    <!-- Game -->
+    <section id="screen-game" class="screen" aria-label="Puzzle">
+      <header class="bar hud">
+        <button class="icon-btn" id="btn-back" aria-label="Back">
+          <svg viewBox="0 0 24 24"><path d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v6H4zM14 15h6v6h-6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="hud-title">
+          <div class="hud-level" id="hud-level">Level 1</div>
+          <div class="hud-chapter" id="hud-chapter"></div>
+        </div>
+        <div class="hud-moves">
+          <div><span class="label">Moves</span> <b id="hud-moves">0</b><span class="of"> / <span id="hud-limit">0</span></span></div>
+          <div><span class="label">Par</span> <b id="hud-par">0</b> <span class="mini-stars" id="hud-stars"></span></div>
+        </div>
+        <button class="icon-btn" data-toggle="sfx" aria-label="Toggle sound effects"></button>
+      </header>
+
+      <div id="coach" class="coach" role="status" hidden></div>
+      <div class="board-wrap">
+        <canvas id="board" aria-label="Puzzle board. Tap a dock to drop or lift a lantern; drag the wheel or use the spin buttons."></canvas>
+        <div id="hand" class="hand" hidden aria-hidden="true">
+          <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="14" fill="none" stroke="#fff3d6" stroke-width="3"/><circle cx="24" cy="24" r="5" fill="#fff3d6"/></svg>
+        </div>
+      </div>
+
+      <footer class="bar controls">
+        <button class="ctrl" id="btn-undo" aria-label="Undo (Z)">
+          <svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Undo</span>
+        </button>
+        <button class="ctrl spin" id="btn-ccw" aria-label="Spin counter-clockwise (left arrow)">
+          <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.6-5.9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M4 4v5h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Spin</span>
+        </button>
+        <button class="ctrl spin" id="btn-cw" aria-label="Spin clockwise (right arrow)">
+          <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Spin</span>
+        </button>
+        <button class="ctrl" id="btn-restart" aria-label="Restart (R)">
+          <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>
+          <span>Restart</span>
+        </button>
+        <button class="ctrl" id="btn-hint" aria-label="Hint (H)">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Hint</span>
+          <b class="badge" id="hint-count">3</b>
+        </button>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Victory -->
+  <div class="modal" id="modal-win" role="dialog" aria-modal="true" aria-labelledby="win-title" hidden>
+    <div class="card win-card">
+      <div class="win-stars" id="win-stars"></div>
+      <h2 id="win-title">Lanterns sorted!</h2>
+      <p class="win-detail" id="win-detail"></p>
+      <p class="win-best" id="win-best"></p>
+      <div class="card-buttons">
+        <button class="btn ghost" id="win-replay">Replay</button>
+        <button class="btn" id="win-levels">Levels</button>
+        <button class="btn primary" id="win-next">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Out of moves -->
+  <div class="modal" id="modal-out" role="dialog" aria-modal="true" aria-labelledby="out-title" hidden>
+    <div class="card">
+      <div class="eyebrow">Move limit reached</div>
+      <h2 id="out-title">Out of moves</h2>
+      <p>The lanterns are still mixed up. Step back a few moves, or start over with a new plan.</p>
+      <div class="card-buttons">
+        <button class="btn" id="out-undo">Undo</button>
+        <button class="btn primary" id="out-restart">Restart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mechanism intro -->
+  <div class="modal" id="modal-intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" hidden>
+    <div class="card">
+      <div class="intro-art" id="intro-art"></div>
+      <div class="eyebrow">New rule</div>
+      <h2 id="intro-title"></h2>
+      <p id="intro-text"></p>
+      <div class="card-buttons"><button class="btn primary" id="intro-ok">Got it</button></div>
+    </div>
+  </div>
+
+  <!-- How to play -->
+  <div class="modal" id="modal-help" role="dialog" aria-modal="true" aria-labelledby="help-title" hidden>
+    <div class="card help-card">
+      <h2 id="help-title">How to play</h2>
+      <ol class="rules">
+        <li><b>Goal:</b> empty the wheel so that every dock holds lanterns of a single color.</li>
+        <li><b>Spin:</b> drag the wheel or use the spin buttons. Every gondola moves one place, all at once.</li>
+        <li><b>Tap a dock:</b> if the gondola facing it carries a lantern, the lantern is dropped onto the dock. If the gondola is empty, the dock’s next lantern is lifted onto it.</li>
+        <li><b>Towers</b> are stacks: only the lantern nearest the wheel can leave. <b>Piers</b> are queues: lanterns leave in the order they arrived, and new ones join at the far end.</li>
+        <li><b>Gates</b> (colored frame) accept only their color. Docks have limited room.</li>
+        <li><b>Moves are limited.</b> Every spin and every tap costs one. Match <i>par</i> (the proven minimum) for three stars. A new ★★★ or a daily puzzle earns a hint.</li>
+      </ol>
+      <p class="keys">Keyboard: <kbd>←</kbd> <kbd>→</kbd> spin · <kbd>1</kbd>–<kbd>5</kbd> docks · <kbd>Z</kbd> undo · <kbd>R</kbd> restart · <kbd>H</kbd> hint</p>
+      <div class="card-buttons"><button class="btn primary" data-close>Let’s play</button></div>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="modal" id="modal-settings" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+    <div class="card">
+      <h2 id="settings-title">Settings</h2>
+      <label class="switch"><span>Sound effects</span><input type="checkbox" id="set-sfx"><i></i></label>
+      <label class="switch"><span>Music</span><input type="checkbox" id="set-music"><i></i></label>
+      <label class="switch"><span>Color symbols</span><input type="checkbox" id="set-glyphs"><i></i></label>
+      <button class="btn danger small" id="btn-reset">Reset progress</button>
+      <div class="card-buttons"><button class="btn primary" data-close>Done</button></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "Lantern Wheel",
+  "short_name": "Lanterns",
+  "description": "A festival sorting puzzle: spin the wheel, stack the towers, queue the piers and sort every lantern by color.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d0a1c",
+  "theme_color": "#160f2b",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

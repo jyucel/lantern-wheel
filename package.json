@@ -1,0 +1,19 @@
+{
+  "name": "lantern-wheel",
+  "version": "1.0.0",
+  "description": "Lantern Wheel: a festival sorting puzzle. Spin the wheel, stack the towers, queue the piers, and sort every lantern by color.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "generate": "node tools/generate-levels.mjs",
+    "test": "node --test tests/",
+    "test:e2e": "playwright test",
+    "test:all": "npm test && npm run test:e2e",
+    "serve": "node tools/serve.mjs",
+    "build": "node tools/build.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.49.0"
+  }
+}
